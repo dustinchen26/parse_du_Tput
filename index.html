@@ -34,22 +34,24 @@
         }
         button {
             margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <h1>GNB DU Statistics Input</h1>
     <textarea id="inputText" placeholder="請輸入數據..."></textarea>
-    <button onclick="parseInput()">Parse</button> <!-- 新增按鈕觸發解析 -->
+    <button onclick="parseInput()">Parse</button> <!-- 增加 Parse 按鈕 -->
 
+    <!-- 圖表區域在表格區域之上 -->
+    <div class="chart-container">
+        <canvas id="dlChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="ulChart"></canvas>
+    </div>
+
+    <!-- 表格區域在圖表區域之下 -->
     <div id="output">
         <h2>提取結果</h2>
         <table id="resultTable">
@@ -64,20 +66,12 @@
         </table>
     </div>
 
-    <div class="chart-container">
-        <canvas id="dlChart"></canvas>
-    </div>
-
-    <div class="chart-container">
-        <canvas id="ulChart"></canvas>
-    </div>
-
     <script>
         let times = [];
         let dlTpts = [];
         let ulTpts = [];
-    let dlChart = null; // 使用變數來存儲圖表對象
-    let ulChart = null;
+        let dlChart = null; // 使用變數來存儲圖表對象
+        let ulChart = null;
 
         function parseInput() {
             const inputText = document.getElementById('inputText').value;
@@ -122,17 +116,17 @@
         }
 
         function updateCharts() {
-        // 清除之前的圖表，如果存在
-        if (dlChart) {
-            dlChart.destroy(); // 銷毀舊的 DL 圖表
-        }
-        if (ulChart) {
-            ulChart.destroy(); // 銷毀舊的 UL 圖表
-        }
+            // 清除之前的圖表，如果存在
+            if (dlChart) {
+                dlChart.destroy(); // 銷毀舊的 DL 圖表
+            }
+            if (ulChart) {
+                ulChart.destroy(); // 銷毀舊的 UL 圖表
+            }
 
-        // 生成新的 DL 圖表
-        const ctxDl = document.getElementById('dlChart').getContext('2d');
-        dlChart = new Chart(ctxDl, {
+            // 生成新的 DL 圖表
+            const ctxDl = document.getElementById('dlChart').getContext('2d');
+            dlChart = new Chart(ctxDl, {
                 type: 'line',
                 data: {
                     labels: times,
@@ -153,9 +147,9 @@
                 }
             });
 
-        // 生成新的 UL 圖表
-        const ctxUl = document.getElementById('ulChart').getContext('2d');
-        ulChart = new Chart(ctxUl, {
+            // 生成新的 UL 圖表
+            const ctxUl = document.getElementById('ulChart').getContext('2d');
+            ulChart = new Chart(ctxUl, {
                 type: 'line',
                 data: {
                     labels: times,
