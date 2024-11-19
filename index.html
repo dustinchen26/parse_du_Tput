@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GNB DU Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #output {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+        }
+        .chart-container {
+            width: 80%;
+            margin-top: 30px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>GNB DU Statistics Input</h1>
+    <textarea id="inputText" placeholder="請輸入數據..."></textarea>
+    <button onclick="parseInput()">Parse</button> <!-- 新增按鈕觸發解析 -->
+
+    <div id="output">
+        <h2>提取結果</h2>
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>DL Tpt</th>
+                    <th>UL Tpt</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="dlChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="ulChart"></canvas>
+    </div>
+
+    <script>
+        let times = [];
+        let dlTpts = [];
+        let ulTpts = [];
+    let dlChart = null; // 使用變數來存儲圖表對象
+    let ulChart = null;
+
+        function parseInput() {
+            const inputText = document.getElementById('inputText').value;
+            const timeRegex = /GNB DU Statistics\s+(.*?\s\d{4})/g;
+            const statsRegex = /SCH\s+DL\s+Tpt\s+:\s+([\d\.]+)\s+UL\s+Tpt\s+([\d\.]+)/g;
+
+            // 重設數據
+            times = [];
+            dlTpts = [];
+            ulTpts = [];
+
+            // 開始解析數據
+            let timeMatch;
+            while ((timeMatch = timeRegex.exec(inputText)) !== null) {
+                const time = timeMatch[1].trim();
+                const statsMatch = statsRegex.exec(inputText);
+                
+                if (statsMatch) {
+                    const dlTpt = parseFloat(statsMatch[1]);
+                    const ulTpt = parseFloat(statsMatch[2]);
+
+                    times.push(time);
+                    dlTpts.push(dlTpt);
+                    ulTpts.push(ulTpt);
+                }
+            }
+
+            // 更新表格和圖表
+            updateTable();
+            updateCharts();
+        }
+
+        function updateTable() {
+            const tableBody = document.querySelector("#resultTable tbody");
+            tableBody.innerHTML = ""; // 清除現有的表格資料
+
+            for (let i = 0; i < times.length; i++) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${times[i]}</td><td>${dlTpts[i]}</td><td>${ulTpts[i]}</td>`;
+                tableBody.appendChild(row);
+            }
+        }
+
+        function updateCharts() {
+        // 清除之前的圖表，如果存在
+        if (dlChart) {
+            dlChart.destroy(); // 銷毀舊的 DL 圖表
+        }
+        if (ulChart) {
+            ulChart.destroy(); // 銷毀舊的 UL 圖表
+        }
+
+        // 生成新的 DL 圖表
+        const ctxDl = document.getElementById('dlChart').getContext('2d');
+        dlChart = new Chart(ctxDl, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'DL Tpt',
+                        data: dlTpts,
+                        borderColor: 'blue',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: { display: true, text: 'DL Tpt over Time' },
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { title: { display: true, text: 'DL Tpt' } }
+                    }
+                }
+            });
+
+        // 生成新的 UL 圖表
+        const ctxUl = document.getElementById('ulChart').getContext('2d');
+        ulChart = new Chart(ctxUl, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'UL Tpt',
+                        data: ulTpts,
+                        borderColor: 'green',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: { display: true, text: 'UL Tpt over Time' },
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { title: { display: true, text: 'UL Tpt' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
