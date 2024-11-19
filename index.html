@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GNB DU Statistics</title>
+    <title>parse_du_Tput</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script> <!-- 引入 SheetJS -->
     <style>
@@ -91,10 +91,9 @@
     </style>
 </head>
 <body>
-    <h2>GNB DU Statistics Input</h2>
+    <h2>parse_du_Tput</h2>
     <p style="margin: 0;">Author: Dustin_Chen, email: <a href="mailto:Dustin_Chen@compal.com">Dustin_Chen@compal.com</a> or <a href="mailto:chuhpsdustin@gmail.com">chuhpsdustin@gmail.com</a></p>
-    <br>
-	<p>● Please paste "du_stats_XXX.txt" content below</p>
+	<p>● Please paste the content of the "du_stats_XXX.txt" file below, and it will parse the UL and DL throughput.</p>
     <textarea id="inputText" placeholder="請輸入數據..."></textarea>
 	<br>
     <button onclick="parseInput()">Parse</button> <!-- 增加 Parse 按鈕 -->
