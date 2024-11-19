@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GNB DU Statistics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script> <!-- 引入 SheetJS -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +15,7 @@
             margin-top: 20px;
         }
         table {
-            width: 100%;
+            width: 30%;
             border-collapse: collapse;
         }
         table, th, td {
@@ -24,14 +25,50 @@
             padding: 10px;
             text-align: center;
         }
+
+        /* 設置表格列寬 */
+        th:nth-child(1), td:nth-child(1) {
+            width: 20%;  /* 時間欄寬度 */
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 5%;  /* DL Tpt欄寬度 */
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 5%;  /* UL Tpt欄寬度 */
+        }
+
         textarea {
             width: 100%;
             height: 300px;
         }
+
+        /* Flexbox布局，並排顯示兩個圖表 */
         .chart-container {
-            width: 80%;
-            margin-top: 30px;
+            flex: 1 1 50%; /* 每個圖表容器佔50%寬度，確保並排 */
+            padding: 0; /* 去除容器的內邊距 */
+            margin: 0; /* 去除容器的外邊距 */
         }
+
+        /* 視覺上使圖表更大 */
+        .charts {
+            display: flex; /* 使用flex布局讓圖表並排 */
+            justify-content: space-between; /* 保持兩者對齊 */
+            gap: 0; /* 沒有間距 */
+            margin-top: 20px;
+        }
+
+        /* 讓canvas占滿容器 */
+        canvas {
+            width: 100% !important; /* 讓canvas占滿容器的寬度 */
+            height: 500px !important; /* 更大尺寸 */
+        }
+
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
         button {
             margin-top: 10px;
         }
@@ -42,13 +79,18 @@
     <textarea id="inputText" placeholder="請輸入數據..."></textarea>
     <button onclick="parseInput()">Parse</button> <!-- 增加 Parse 按鈕 -->
 
-    <!-- 圖表區域在表格區域之上 -->
-    <div class="chart-container">
-        <canvas id="dlChart"></canvas>
-    </div>
+    <!-- 文字標題區域 -->
+    <div class="chart-title" id="dlChartTitle">DL Tpt</div>
+    <div class="chart-title" id="ulChartTitle">UL Tpt</div>
 
-    <div class="chart-container">
-        <canvas id="ulChart"></canvas>
+    <!-- 圖表區域，並排顯示 -->
+    <div class="charts">
+        <div class="chart-container">
+            <canvas id="dlChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="ulChart"></canvas>
+        </div>
     </div>
 
     <!-- 表格區域在圖表區域之下 -->
@@ -72,6 +114,14 @@
         let ulTpts = [];
         let dlChart = null; // 使用變數來存儲圖表對象
         let ulChart = null;
+
+        // 初始情況顯示提示文字，並隱藏圖表
+        window.onload = function() {
+            document.getElementById('dlChart').style.display = 'none';
+            document.getElementById('ulChart').style.display = 'none';
+            document.getElementById('dlChartTitle').style.display = 'block';
+            document.getElementById('ulChartTitle').style.display = 'block';
+        };
 
         function parseInput() {
             const inputText = document.getElementById('inputText').value;
@@ -102,6 +152,9 @@
             // 更新表格和圖表
             updateTable();
             updateCharts();
+
+            // 觸發 Excel 下載
+            downloadExcel();
         }
 
         function updateTable() {
@@ -116,6 +169,12 @@
         }
 
         function updateCharts() {
+            // 顯示圖表並隱藏標題文字
+            document.getElementById('dlChart').style.display = 'block';
+            document.getElementById('ulChart').style.display = 'block';
+            document.getElementById('dlChartTitle').style.display = 'none';
+            document.getElementById('ulChartTitle').style.display = 'none';
+
             // 清除之前的圖表，如果存在
             if (dlChart) {
                 dlChart.destroy(); // 銷毀舊的 DL 圖表
@@ -169,6 +228,21 @@
                     }
                 }
             });
+        }
+
+        // 下載 Excel 表格
+        function downloadExcel() {
+            const ws_data = [
+                ['Time', 'DL Tpt', 'UL Tpt'], // 表頭
+                ...times.map((time, index) => [time, dlTpts[index], ulTpts[index]]) // 表格資料
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data); // 將資料轉換為 Sheet
+            const wb = XLSX.utils.book_new(); // 創建一個新的工作簿
+            XLSX.utils.book_append_sheet(wb, ws, 'GNB DU Stats'); // 將資料表添加到工作簿中
+
+            // 觸發下載
+            XLSX.writeFile(wb, 'GNB_DU_Statistics.xlsx');
         }
     </script>
 </body>
