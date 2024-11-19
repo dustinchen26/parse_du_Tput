@@ -1,3 +1,9 @@
+<!-- 
+  Copyright © [2023] [Dustin_Chen]. All rights reserved.
+  Author: Dustin_Chen 
+  Email:  Dustin_Chen@compal.com or chuhpsdustin@gmail.com
+-->
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -8,6 +14,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script> <!-- 引入 SheetJS -->
     <style>
         body {
+            font-size: 14px;
+            font-family: Roboto, sans-serif;		
             font-family: Arial, sans-serif;
             margin: 20px;
         }
@@ -38,35 +46,43 @@
         }
 
         textarea {
-            width: 100%;
+            width: 70%;
             height: 300px;
         }
 
         /* Flexbox布局，並排顯示兩個圖表 */
+        .charts {
+            display: flex; /* 使用flex布局讓圖表並排 */
+            justify-content: space-between; /* 保持兩者對齊 */
+            gap: 20px; /* 增加間距，避免圖表太擠 */
+            margin-top: 20px;
+            width: 100%; /* 使容器寬度自適應 */
+        }
+
         .chart-container {
             flex: 1 1 50%; /* 每個圖表容器佔50%寬度，確保並排 */
             padding: 0; /* 去除容器的內邊距 */
             margin: 0; /* 去除容器的外邊距 */
         }
 
-        /* 視覺上使圖表更大 */
-        .charts {
-            display: flex; /* 使用flex布局讓圖表並排 */
-            justify-content: space-between; /* 保持兩者對齊 */
-            gap: 0; /* 沒有間距 */
-            margin-top: 20px;
-        }
-
-        /* 讓canvas占滿容器 */
         canvas {
             width: 100% !important; /* 讓canvas占滿容器的寬度 */
-            height: 500px !important; /* 更大尺寸 */
+            height: 100% !important; /* 讓canvas占滿容器的高度 */
+        }
+
+        /* 讓標題區域自適應 */
+        .chart-titles {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
         }
 
         .chart-title {
+            flex: 1;
             text-align: center;
-            font-weight: bold;
-            margin-top: 20px;
         }
 
         button {
@@ -75,13 +91,19 @@
     </style>
 </head>
 <body>
-    <h1>GNB DU Statistics Input</h1>
+    <h2>GNB DU Statistics Input</h2>
+    <p style="margin: 0;">Author: Dustin_Chen, email: <a href="mailto:Dustin_Chen@compal.com">Dustin_Chen@compal.com</a> or <a href="mailto:chuhpsdustin@gmail.com">chuhpsdustin@gmail.com</a></p>
+    <br>
+	
     <textarea id="inputText" placeholder="請輸入數據..."></textarea>
+	<br>
     <button onclick="parseInput()">Parse</button> <!-- 增加 Parse 按鈕 -->
 
     <!-- 文字標題區域 -->
+    <div class="chart-titles">
     <div class="chart-title" id="dlChartTitle">DL Tpt</div>
     <div class="chart-title" id="ulChartTitle">UL Tpt</div>
+    </div>
 
     <!-- 圖表區域，並排顯示 -->
     <div class="charts">
@@ -197,11 +219,44 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    title: { display: true, text: 'DL Tpt over Time' },
+                    responsive: true, // 開啟自適應模式
+                    maintainAspectRatio: false, // 允許圖表在變更大小時改變比例
+                    title: {
+                        display: true, 
+                        text: 'DL Tpt over Time',
+                        font: {
+                            size: 18, // 增大標題文字大小
+                        }
+                    },
                     scales: {
-                        x: { title: { display: true, text: 'Time' } },
-                        y: { title: { display: true, text: 'DL Tpt' } }
+                        x: { 
+                            title: { 
+                                display: true, 
+                                text: 'Time',
+                                font: {
+                                    size: 16 // X 軸文字大小
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14 // 控制X軸文字大小
+                                }
+                            }
+                        },
+                        y: { 
+                            title: { 
+                                display: true, 
+                                text: 'DL Tpt',
+                                font: {
+                                    size: 16 // Y 軸文字大小
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14 // 控制Y軸文字大小
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -220,11 +275,44 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    title: { display: true, text: 'UL Tpt over Time' },
+                    responsive: true, // 開啟自適應模式
+                    maintainAspectRatio: false, // 允許圖表在變更大小時改變比例
+                    title: {
+                        display: true,
+                        text: 'UL Tpt over Time',
+                        font: {
+                            size: 18, // 增大標題文字大小
+                        }
+                    },
                     scales: {
-                        x: { title: { display: true, text: 'Time' } },
-                        y: { title: { display: true, text: 'UL Tpt' } }
+                        x: { 
+                            title: { 
+                                display: true, 
+                                text: 'Time',
+                                font: {
+                                    size: 16 // X 軸文字大小
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14 // 控制X軸文字大小
+                                }
+                            }
+                        },
+                        y: { 
+                            title: { 
+                                display: true, 
+                                text: 'UL Tpt',
+                                font: {
+                                    size: 16 // Y 軸文字大小
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14 // 控制Y軸文字大小
+                                }
+                            }
+                        }
                     }
                 }
             });
